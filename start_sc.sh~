@@ -1,0 +1,3 @@
+./start_ctc.sh
+./start_caen.sh
+./start_logger.sh

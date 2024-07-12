@@ -1,0 +1,50 @@
+import sys
+import os
+import importlib.util
+current = os.path.dirname(os.path.realpath(__file__))
+ 
+# Getting the parent directory name
+# where the current directory is present.
+parent = os.path.dirname(current)
+ 
+# adding the parent directory to 
+# the sys.path.
+sys.path.append(parent)
+# directory reach
+#directory = path.path(__file__).abspath() 
+import db_utils as db_utils
+import time
+
+
+import libABCD
+libABCD.init('dblogger',publisher=True, listener=True, connect=True)
+
+
+ctc100_topic = 'sc/temp/ctc100/get'
+caen1_topic = 'sc/hv/caen1/get'
+caen2_topic = 'sc/hv/caen2/get'
+
+
+measurement = 'test_meas'
+def log_ctc100(msg='', topic=ctc100_topic):
+    print("------- message from CTC100 -------- ")
+    print(msg)
+    db_utils.push_to_influx(measurement, msg, tags={"run":"run_name"})
+
+def log_caen(msg='', topic=caen1_topic):
+    print("------- message from CAEN1 -------- ")
+    print(msg)
+    db_utils.push_to_influx(measurement, msg, tags={"run":"run_name"})
+
+
+    
+libABCD.subscribe(ctc100_topic)
+libABCD.subscribe(caen1_topic)
+libABCD.subscribe(caen2_topic)
+
+libABCD.add_callback(ctc100_topic, log_ctc100)
+libABCD.add_callback(caen1_topic, log_caen1)
+libABCD.add_callback(caen2_topic, log_caen2)
+
+
+
